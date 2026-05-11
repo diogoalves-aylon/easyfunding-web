@@ -8,6 +8,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 
 def _redis_pubsub():
     url = settings.NOTIFICATIONS_REDIS_URL
+    if not url:
+        return None
     r = redis.Redis.from_url(url, decode_responses=True)
     return r.pubsub()
 
@@ -39,8 +41,14 @@ def notifications_stream(request):
         )
     user, _jwt = user_auth
 
-    channel = f"{settings.NOTIFICATIONS_REDIS_CHANNEL_PREFIX}{user.id}"
     pubsub = _redis_pubsub()
+    if pubsub is None:
+        return StreamingHttpResponse(
+            (_sse("ready", {"ok": True}) for _ in range(1)),
+            content_type="text/event-stream",
+        )
+
+    channel = f"{settings.NOTIFICATIONS_REDIS_CHANNEL_PREFIX}{user.id}"
     pubsub.subscribe(channel)
 
     def gen():
