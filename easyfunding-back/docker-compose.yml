@@ -1,0 +1,19 @@
+services:
+  boilerplate-drf:
+    build: .
+    container_name: boilerplate-drf
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    restart: always
+    networks:
+      - boilerplate-network
+
+networks:
+  boilerplate-network:
+    external: true

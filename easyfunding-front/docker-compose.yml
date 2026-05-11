@@ -1,0 +1,15 @@
+services:
+  boilerplate-vue:
+    build: .
+    container_name: boilerplate-vue
+    ports:
+      - "3000:3000"
+    restart: always
+    env_file:
+      - .env
+    networks:
+      - boilerplate-network
+
+networks:
+  boilerplate-network:
+    external: true

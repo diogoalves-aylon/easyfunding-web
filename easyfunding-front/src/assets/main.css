@@ -1,0 +1,83 @@
+@import "tailwindcss";
+@import "../shared/styles/ui.css";
+
+@variant dark (&:where(.dark, .dark *));
+
+/* Define semantic theme variables that switch based on mode */
+:root {
+  --bg-theme: var(--theme-light-background);
+  --text-theme: var(--theme-light-text);
+  --icon-theme: var(--theme-light-icon);
+
+  --surface-theme: var(--theme-light-surface);
+  --muted-theme: var(--theme-light-muted);
+  --border-theme: var(--theme-light-border);
+
+  --bg-button-theme: var(--color-primary);
+  --text-secondary-theme: var(--color-secondary);
+  --bg-card-theme: var(--color-primary);
+}
+:root:where(.dark, .dark *) {
+  --bg-theme: var(--theme-dark-background);
+  --text-theme: var(--theme-dark-text);
+  --icon-theme: var(--theme-dark-icon);
+  
+  --surface-theme: var(--theme-dark-surface);
+  --muted-theme: var(--theme-dark-muted);
+  --border-theme: var(--theme-dark-border);
+  
+  --bg-button-theme: var(--color-secondary);
+  --text-secondary-theme: var(--color-primary);
+  --bg-card-theme: var(--color-secondary);
+}
+
+@theme {
+  --color-primary: var(--app-primary);
+  --color-secondary: var(--app-secondary);
+
+  /* Expose semantic colors to Tailwind */
+  --color-theme-bg: var(--bg-theme);
+  --color-theme-text: var(--text-theme);
+  --color-theme-icon: var(--icon-theme);
+  
+  --color-theme-surface: var(--surface-theme);
+  --color-theme-muted: var(--muted-theme);
+  --color-theme-border: var(--border-theme);
+  
+  --color-theme-button: var(--bg-button-theme);
+  --color-theme-textSecondary: var(--text-secondary-theme);
+  --color-theme-card: var(--bg-card-theme);
+}
+
+html {
+  transition: background-color 250ms ease;
+}
+
+*,
+*::before,
+*::after {
+  transition:
+    background-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    fill 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    stroke 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-theme);
+    color: var(--text-theme);
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
+
+  :root {
+    --sat: var(--safe-area-inset-top, env(safe-area-inset-top));
+    --sab: var(--safe-area-inset-bottom, env(safe-area-inset-bottom));
+    --sal: var(--safe-area-inset-left, env(safe-area-inset-left));
+    --sar: var(--safe-area-inset-right, env(safe-area-inset-right));
+  }
+}

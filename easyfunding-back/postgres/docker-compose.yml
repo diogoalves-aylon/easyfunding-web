@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: boilerplate-drf_postgres
+    restart: always
+    env_file:
+      - ../.env
+    volumes:
+      - boilerplate-drf-web_pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - boilerplate-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: boilerplate-drf_pgadmin
+    restart: always
+    ports:
+      - "5050:80"
+    env_file:
+      - ../.env
+    volumes:
+      - boilerplate-drf-web_pgadmin_data:/var/lib/pgadmin
+    networks:
+      - boilerplate-network
+
+volumes:
+  boilerplate-drf-web_pgdata:
+    name: boilerplate-drf-web_pgdata
+  boilerplate-drf-web_pgadmin_data:
+    name: boilerplate-drf-web_pgadmin_data
+
+networks:
+  boilerplate-network:
+    name: boilerplate-network

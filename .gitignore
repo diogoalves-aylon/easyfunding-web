@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Django
+easyfunding-back/staticfiles/
+easyfunding-back/media/
+
+# Node
+easyfunding-front/node_modules/
+easyfunding-front/dist/
+
+# Env files
+.env
+.env.*
+!.env.example
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
