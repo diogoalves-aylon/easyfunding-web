@@ -2,8 +2,8 @@
 # -*- encoding: utf-8 -*-
 
 bind = '0.0.0.0:8000'
-workers = 9  # Ajuste conforme o número de núcleos (2 * núcleos + 1)
-threads = 4  # Ajuste conforme o overhead do I/O
+workers = 2
+threads = 2
 timeout = 600  # 6 minuto para a maioria das requisições
 graceful_timeout = 60
 max_requests = 1000  # Reinicia worker após processar 1000 requisições
