@@ -59,8 +59,9 @@ function renderMarkdown(text: string): string {
     .replace(/>/g, '&gt;');
 
   return escaped
-    .replace(/^### (.+)$/gm, '<h3 class="text-sm font-bold mt-3 mb-1">$1</h3>')
-    .replace(/^## (.+)$/gm, '<h2 class="text-base font-bold mt-4 mb-1">$2</h2>'.replace('$2', '$1'))
+    .replace(/^#{4} (.+)$/gm, '<h4 class="text-sm font-semibold mt-2 mb-0.5">$1</h4>')
+    .replace(/^#{3} (.+)$/gm, '<h3 class="text-sm font-bold mt-3 mb-1">$1</h3>')
+    .replace(/^#{2} (.+)$/gm, '<h2 class="text-base font-bold mt-4 mb-1">$1</h2>')
     .replace(/^# (.+)$/gm, '<h1 class="text-lg font-bold mt-4 mb-2">$1</h1>')
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
     .replace(/\*(.+?)\*/g, '<em>$1</em>')
@@ -91,7 +92,7 @@ const sendMessage = async () => {
   await scrollToBottom();
 
   try {
-    const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8001'
+    const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8001';
     const res = await fetch(`${chatApiUrl}/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -100,12 +101,37 @@ const sendMessage = async () => {
 
     if (!res.ok) throw new Error(`Erro: ${res.status}`);
 
-    const data = await res.json();
-    messages.value.push({
-      role: 'bot',
-      text: data.answer,
-      sources: data.sources,
-    });
+    // Add empty bot message and stream tokens into it
+    messages.value.push({ role: 'bot', text: '' });
+    const msgIndex = messages.value.length - 1;
+    isTyping.value = false;
+
+    const reader = res.body!.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      const lines = buffer.split('\n');
+      buffer = lines.pop() ?? '';
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const payload = line.slice(6).trim();
+        if (payload === '[DONE]') break;
+        try {
+          const parsed = JSON.parse(payload);
+          if (parsed.token) {
+            messages.value[msgIndex].text += parsed.token;
+            await scrollToBottom();
+          }
+          if (parsed.error) {
+            messages.value[msgIndex].text = parsed.error;
+          }
+        } catch {}
+      }
+    }
   } catch (error) {
     messages.value.push({
       role: 'bot',
