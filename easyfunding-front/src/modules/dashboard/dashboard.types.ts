@@ -1,9 +1,9 @@
 export interface DashboardKpis {
-  revenue: number;
-  sessions: number;
-  conversion: number;
-  errors: number;
-  latency: number;
+  avisosAbertos: number;
+  utilizadoresAtivos: number;
+  fundosDisponiveis: number;
+  prazoMedio: number;
+  totalFavoritos: number;
 }
 
 export interface DashboardStatus {

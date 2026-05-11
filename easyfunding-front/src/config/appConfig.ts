@@ -60,6 +60,7 @@ export const appConfig = reactive({
         },
     ] as CategoryMenuItem[],
     adminMenu: [
+        { label: 'Dashboard', icon: 'LayoutDashboard', to: '/dashboard' },
         { label: 'Gerir Utilizadores', icon: 'Users', to: '/admin/users' },
         { label: 'Gerir Permissoes', icon: 'Shield', to: '/admin/roles' },
     ] as MenuItem[]
