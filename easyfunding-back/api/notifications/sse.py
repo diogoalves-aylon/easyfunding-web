@@ -43,10 +43,15 @@ def notifications_stream(request):
 
     pubsub = _redis_pubsub()
     if pubsub is None:
-        return StreamingHttpResponse(
-            (_sse("ready", {"ok": True}) for _ in range(1)),
-            content_type="text/event-stream",
-        )
+        def _no_redis_gen():
+            yield _sse("ready", {"ok": True})
+            while True:
+                time.sleep(30)
+                yield ": ping\n\n"
+        resp = StreamingHttpResponse(_no_redis_gen(), content_type="text/event-stream")
+        resp["Cache-Control"] = "no-cache"
+        resp["X-Accel-Buffering"] = "no"
+        return resp
 
     channel = f"{settings.NOTIFICATIONS_REDIS_CHANNEL_PREFIX}{user.id}"
     pubsub.subscribe(channel)
