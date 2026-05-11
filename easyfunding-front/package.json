@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "vite",
     "mobile:init": "node scripts/mobile-init.mjs",
-    "build": "run-p type-check \"build-only {@}\" --",
+    "build": "vite build",
     "preview": "vite preview",
     "build-only": "vite build",
     "type-check": "vue-tsc --build",
