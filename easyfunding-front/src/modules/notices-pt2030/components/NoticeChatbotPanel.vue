@@ -163,8 +163,14 @@ watch(() => props.modelValue, (isOpen) => {
         <!-- Resize handle -->
         <div
           @mousedown.prevent="startResize"
-          class="absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-primary/40 transition-colors z-10"
-        ></div>
+          class="absolute left-0 top-0 bottom-0 w-3 cursor-col-resize group z-10 flex items-center justify-center"
+        >
+          <div class="w-1 h-10 rounded-full bg-gray-300 dark:bg-gray-600 group-hover:bg-primary transition-colors flex flex-col items-center justify-center gap-1">
+            <div class="w-0.5 h-0.5 rounded-full bg-white/60"></div>
+            <div class="w-0.5 h-0.5 rounded-full bg-white/60"></div>
+            <div class="w-0.5 h-0.5 rounded-full bg-white/60"></div>
+          </div>
+        </div>
 
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-theme-border bg-theme-bg">
