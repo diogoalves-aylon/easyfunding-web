@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch, nextTick } from 'vue';
+import { ref, watch, nextTick, onUnmounted } from 'vue';
 import AppIcon from '@/shared/components/AppIcon.vue';
 
 const props = defineProps<{
@@ -26,6 +26,31 @@ const scrollToBottom = async () => {
 const closePanel = () => {
   emit('update:modelValue', false);
 };
+
+const panelWidth = ref(448); // 28rem default (max-w-md)
+const MIN_WIDTH = 320;
+const MAX_WIDTH = Math.min(window.innerWidth - 48, 1200);
+const isResizing = ref(false);
+
+function startResize(e: MouseEvent) {
+  isResizing.value = true;
+  const startX = e.clientX;
+  const startWidth = panelWidth.value;
+
+  const onMove = (ev: MouseEvent) => {
+    const delta = startX - ev.clientX;
+    panelWidth.value = Math.min(MAX_WIDTH, Math.max(MIN_WIDTH, startWidth + delta));
+  };
+  const onUp = () => {
+    isResizing.value = false;
+    window.removeEventListener('mousemove', onMove);
+    window.removeEventListener('mouseup', onUp);
+  };
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+}
+
+onUnmounted(() => { isResizing.value = false; });
 
 function renderMarkdown(text: string): string {
   const escaped = text
@@ -131,8 +156,16 @@ watch(() => props.modelValue, (isOpen) => {
     >
       <div
         v-if="modelValue"
-        class="fixed inset-y-0 right-0 z-[9999] w-full max-w-md bg-theme-surface shadow-2xl flex flex-col border-l border-theme-border"
+        :style="{ width: panelWidth + 'px' }"
+        class="fixed inset-y-0 right-0 z-[9999] bg-theme-surface shadow-2xl flex flex-col border-l border-theme-border"
+        :class="{ 'select-none': isResizing }"
       >
+        <!-- Resize handle -->
+        <div
+          @mousedown.prevent="startResize"
+          class="absolute left-0 top-0 bottom-0 w-1.5 cursor-col-resize hover:bg-primary/40 transition-colors z-10"
+        ></div>
+
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-theme-border bg-theme-bg">
           <div class="flex items-center gap-3">
