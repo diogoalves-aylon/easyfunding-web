@@ -27,11 +27,39 @@ const closePanel = () => {
   emit('update:modelValue', false);
 };
 
+function renderMarkdown(text: string): string {
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+
+  return escaped
+    .replace(/^### (.+)$/gm, '<h3 class="text-sm font-bold mt-3 mb-1">$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2 class="text-base font-bold mt-4 mb-1">$2</h2>'.replace('$2', '$1'))
+    .replace(/^# (.+)$/gm, '<h1 class="text-lg font-bold mt-4 mb-2">$1</h1>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/^- (.+)$/gm, '<li class="ml-4 list-disc list-inside">$1</li>')
+    .replace(/(<li[^>]*>[\s\S]*?<\/li>\n?)+/g, m => `<ul class="my-1 space-y-0.5">${m}</ul>`)
+    .replace(/\n\n/g, '</p><p class="mb-2 mt-1">')
+    .replace(/\n/g, '<br>');
+}
+
+function topSources(sources: any[]): any[] {
+  const best: Record<string, any> = {};
+  for (const s of sources) {
+    const fn = s.filename;
+    if (!best[fn] || s.score > best[fn].score) best[fn] = s;
+  }
+  return Object.values(best)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 5);
+}
+
 const sendMessage = async () => {
   const text = currentInput.value.trim();
   if (!text) return;
 
-  // Adiciona a mensagem do user
   messages.value.push({ role: 'user', text });
   currentInput.value = '';
   isTyping.value = true;
@@ -41,18 +69,11 @@ const sendMessage = async () => {
     const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8001'
     const res = await fetch(`${chatApiUrl}/chat`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        concurso_id: props.concursoId,
-        question: text,
-      }),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ concurso_id: props.concursoId, question: text }),
     });
 
-    if (!res.ok) {
-      throw new Error(`Erro: ${res.status}`);
-    }
+    if (!res.ok) throw new Error(`Erro: ${res.status}`);
 
     const data = await res.json();
     messages.value.push({
@@ -71,7 +92,6 @@ const sendMessage = async () => {
   }
 };
 
-// Quando abre, se não houver mensagens, podemos colocar uma mensagem de boas vindas
 watch(() => props.modelValue, (isOpen) => {
   if (isOpen && messages.value.length === 0) {
     messages.value.push({
@@ -93,8 +113,8 @@ watch(() => props.modelValue, (isOpen) => {
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div 
-        v-if="modelValue" 
+      <div
+        v-if="modelValue"
         @click="closePanel"
         class="fixed inset-0 bg-black/40 z-[9998] backdrop-blur-sm"
       ></div>
@@ -109,7 +129,7 @@ watch(() => props.modelValue, (isOpen) => {
       leave-from-class="translate-x-0"
       leave-to-class="translate-x-full"
     >
-      <div 
+      <div
         v-if="modelValue"
         class="fixed inset-y-0 right-0 z-[9999] w-full max-w-md bg-theme-surface shadow-2xl flex flex-col border-l border-theme-border"
       >
@@ -124,7 +144,7 @@ watch(() => props.modelValue, (isOpen) => {
               <p class="text-xs text-theme-muted">Aviso PT2030</p>
             </div>
           </div>
-          <button 
+          <button
             @click="closePanel"
             class="text-theme-muted hover:text-theme-text transition-colors p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800"
           >
@@ -133,34 +153,34 @@ watch(() => props.modelValue, (isOpen) => {
         </div>
 
         <!-- Chat Area -->
-        <div 
+        <div
           ref="chatContainer"
           class="flex-1 overflow-y-auto p-6 space-y-6 bg-theme-surface"
         >
-          <div 
-            v-for="(msg, idx) in messages" 
+          <div
+            v-for="(msg, idx) in messages"
             :key="idx"
             :class="['flex w-full', msg.role === 'user' ? 'justify-end' : 'justify-start']"
           >
-            <div 
+            <div
               :class="[
                 'max-w-[85%] rounded-2xl px-5 py-3 text-sm shadow-sm',
-                msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-br-none' 
+                msg.role === 'user'
+                  ? 'bg-primary text-white rounded-br-none'
                   : 'bg-theme-bg text-theme-text border border-theme-border rounded-bl-none'
               ]"
             >
-              <div class="whitespace-pre-wrap leading-relaxed">{{ msg.text }}</div>
-              
-              <!-- Sources (optional detail for bot) -->
-              <div v-if="msg.sources && msg.sources.length > 0" class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
-                <p class="text-xs font-semibold mb-1 opacity-70">Fontes consultadas:</p>
-                <ul class="text-[11px] opacity-70 space-y-1">
-                  <li v-for="(src, i) in msg.sources" :key="i" class="truncate">
-                    • {{ src.filename }} (confiança: {{ src.score }})
-                  </li>
-                </ul>
-              </div>
+              <!-- User messages: plain text. Bot messages: rendered markdown -->
+              <div
+                v-if="msg.role === 'user'"
+                class="whitespace-pre-wrap leading-relaxed"
+              >{{ msg.text }}</div>
+              <div
+                v-else
+                class="leading-relaxed prose-sm"
+                v-html="renderMarkdown(msg.text)"
+              ></div>
+
             </div>
           </div>
 
@@ -176,18 +196,18 @@ watch(() => props.modelValue, (isOpen) => {
 
         <!-- Input Area -->
         <div class="p-4 border-t border-theme-border bg-theme-surface">
-          <form 
+          <form
             @submit.prevent="sendMessage"
             class="relative flex items-center"
           >
-            <input 
+            <input
               v-model="currentInput"
               type="text"
               placeholder="Pergunta sobre este aviso..."
               class="w-full bg-theme-bg border-transparent focus:border-primary focus:bg-theme-surface rounded-full py-3 pl-5 pr-12 text-sm transition-all outline-none border"
               :disabled="isTyping"
             />
-            <button 
+            <button
               type="submit"
               :disabled="!currentInput.trim() || isTyping"
               class="absolute right-2 p-2 bg-primary text-white rounded-full hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
