@@ -27,7 +27,7 @@ const emit = defineEmits<{
         <!-- header -->
         <div class="p-4 flex items-center justify-between ui-border bg-theme-bg rounded-lg">
           <h3 class="font-extrabold text-theme-text">
-            Assign User to {{ roleName }}
+            Atribuir utilizador a {{ roleName }}
           </h3>
 
           <button
@@ -45,7 +45,7 @@ const emit = defineEmits<{
             :value="search"
             @input="e => emit('update:search', (e.target as HTMLInputElement).value)"
             type="text"
-            placeholder="Search users..."
+            placeholder="Pesquisar utilizadores..."
             class="w-full px-4 py-2 rounded-lg text-sm mb-4 outline-none ui-border bg-theme-bg shadow text-theme-text placeholder:text-theme-muted/70"
           />
 
@@ -92,7 +92,7 @@ const emit = defineEmits<{
             class="px-4 py-2 rounded-lg text-sm font-bold text-theme-text bg-theme-bg transition hover:brightness-150 cursor-pointer"
             style="background: rgba(148,163,184,0.15); color: var(--text-theme);"
           >
-            Cancel
+            Cancelar
           </button>
 
           <button
@@ -101,7 +101,7 @@ const emit = defineEmits<{
             :disabled="!selectedUserId"
             class="px-4 py-2 rounded-lg text-sm font-bold bg-theme-button text-theme-textSecondary hover:brightness-110 transition cursor-pointer"
           >
-            Confirm Assignment
+            Confirmar Atribuição
           </button>
         </div>
       </div>

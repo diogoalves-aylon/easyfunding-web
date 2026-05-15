@@ -25,7 +25,7 @@ const emit = defineEmits<{
   <div class="p-6 ui-border bg-black/5 dark:bg-white/10 flex items-center justify-between">
     <div>
       <h2 class="text-lg font-extrabold text-theme-text">
-        {{ isCreating ? "New Role" : "Edit Role" }}
+        {{ isCreating ? "Novo Perfil" : "Editar Perfil" }}
       </h2>
 
       <span v-if="!isCreating" class="text-xs font-mono text-theme-muted">
@@ -40,7 +40,7 @@ const emit = defineEmits<{
         type="button"
         @click="emit('delete')"
         class="p-2 rounded-lg transition hover:brightness-110 ui-border bg-red-500/10 text-red-500"
-        title="Delete Role"
+        title="Eliminar Perfil"
       >
         <AppIcon name="Trash2" :size="20" className="text-red-500" />
       </button>
@@ -52,7 +52,7 @@ const emit = defineEmits<{
         class="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition hover:brightness-110 bg-theme-button text-theme-textSecondary"
       >
         <AppIcon name="Save" :size="16" className="text-theme-textSecondary" />
-        Save Changes
+        Guardar
       </button>
     </div>
   </div>
@@ -62,21 +62,21 @@ const emit = defineEmits<{
     <!-- Basic Info -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="space-y-2">
-        <label class="text-sm font-bold text-theme-muted">Role Name</label>
+        <label class="text-sm font-bold text-theme-muted">Nome do Perfil</label>
         <input
           v-model="editForm.name"
           type="text"
-          placeholder="e.g. Editor"
+          placeholder="ex: Editor"
           class="w-full px-4 py-2 rounded-lg text-sm outline-none ui-border bg-theme-bg shadow text-theme-text placeholder:text-theme-muted/70"
         />
       </div>
 
       <div class="space-y-2">
-        <label class="text-sm font-bold text-theme-muted">Description</label>
+        <label class="text-sm font-bold text-theme-muted">Descrição</label>
         <input
           v-model="editForm.description"
           type="text"
-          placeholder="Role description..."
+          placeholder="Descrição do perfil..."
           class="w-full px-4 py-2 rounded-lg text-sm outline-none ui-border bg-theme-bg shadow text-theme-text placeholder:text-theme-muted/70"
         />
       </div>
@@ -86,7 +86,7 @@ const emit = defineEmits<{
     <div>
       <h3 class="text-sm font-extrabold uppercase tracking-widest mb-4 flex items-center gap-2 text-theme-text">
         <AppIcon name="Shield" :size="16" className=" text-theme-text" />
-        Route Permissions
+        Permissões de Acesso
       </h3>
 
       <RolePermissionsGrid
@@ -101,7 +101,7 @@ const emit = defineEmits<{
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-sm font-extrabold uppercase tracking-widest flex items-center gap-2 text-theme-text">
           <AppIcon name="UserPlus" :size="16" className="text-theme-text" />
-          Assigned Users
+          Utilizadores Atribuídos
         </h3>
 
         <button
@@ -109,7 +109,7 @@ const emit = defineEmits<{
           @click="emit('openAssignUser')"
           class="text-xs px-3 py-1.5 rounded-md font-bold transition hover:brightness-105 ui-border bg-theme-button text-theme-textSecondary"
         >
-          + Add User
+          + Adicionar Utilizador
         </button>
       </div>
 

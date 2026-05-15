@@ -8,9 +8,9 @@ const emit = defineEmits<{ (e: 'create'): void }>()
     <div>
       <h1 class="text-2xl font-extrabold text-theme-text flex items-center gap-2">
         <Shield class="w-6 h-6" />
-        Role Management
+        Gestão de Perfis
       </h1>
-      <p class="text-sm text-theme-muted">Manage access control and user roles</p>
+      <p class="text-sm text-theme-muted">Gere os perfis de acesso e permissões dos utilizadores</p>
     </div>
 
     <button
@@ -18,7 +18,7 @@ const emit = defineEmits<{ (e: 'create'): void }>()
       class="flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm transition bg-theme-button text-theme-textSecondary hover:brightness-110"
     >
       <Plus class="w-4 h-4"/>
-      Create Role
+      Criar Perfil
     </button>
   </div>
 </template>
