@@ -91,6 +91,9 @@ const sendMessage = async () => {
   isTyping.value = true;
   await scrollToBottom();
 
+  const t0 = performance.now();
+  let tFirstToken: number | null = null;
+
   try {
     const chatApiUrl = import.meta.env.VITE_CHAT_API_URL || 'http://localhost:8001';
     const res = await fetch(`${chatApiUrl}/chat`, {
@@ -98,6 +101,9 @@ const sendMessage = async () => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ concurso_id: props.concursoId, question: text }),
     });
+
+    const tResponse = performance.now();
+    console.log(`[chat] server response headers: ${((tResponse - t0) / 1000).toFixed(2)}s`);
 
     if (!res.ok) throw new Error(`Erro: ${res.status}`);
 
@@ -119,10 +125,17 @@ const sendMessage = async () => {
       for (const line of lines) {
         if (!line.startsWith('data: ')) continue;
         const payload = line.slice(6).trim();
-        if (payload === '[DONE]') break;
+        if (payload === '[DONE]') {
+          console.log(`[chat] total: ${((performance.now() - t0) / 1000).toFixed(2)}s`);
+          break;
+        }
         try {
           const parsed = JSON.parse(payload);
           if (parsed.token) {
+            if (!tFirstToken) {
+              tFirstToken = performance.now();
+              console.log(`[chat] time to first token: ${((tFirstToken - t0) / 1000).toFixed(2)}s`);
+            }
             messages.value[msgIndex].text += parsed.token;
             await scrollToBottom();
           }
